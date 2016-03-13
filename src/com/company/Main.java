@@ -49,17 +49,10 @@ public class Main {
         matrix2[3][2] = 31;
         matrix2[3][3] = 32;
 
-
-        int[][] product = new int[matrix1.length][matrix2[0].length];
-        int[][] sum = new int[matrix1.length][matrix1[0].length];
-        int[][] strassen = new int [matrix1.length][matrix2[0].length];;
-
-        product = Matrix.multiply(matrix1, matrix2);
-        sum = Matrix.sum(matrix1, matrix1);
-        strassen = Matrix.strassen(matrix1, matrix2);
-
+        int[][] product = Matrix.multiply(matrix1, matrix2);
+        int[][] strassen = Matrix.strassen(matrix1, matrix2);
         Matrix.printMatrix(product);
-        //Matrix.printMatrix(sum);
+        System.out.println("");
         Matrix.printMatrix(strassen);
     }
 }

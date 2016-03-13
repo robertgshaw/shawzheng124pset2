@@ -4,9 +4,9 @@ package com.company;
  * Created by robertshaw on 3/12/16.
  */
 public class Matrix {
-    // sum of matrixes
+    // sum of matrices
     public static int[][] sum(int[][] matrix1, int[][] matrix2) {
-        // assures matrixes "match up"
+        // assures matrices "match up"
         if (matrix1.length == matrix2.length && matrix1[0].length == matrix2[0].length) {
             int[][] sum = new int[matrix1.length][matrix1[0].length];
             for (int i = 0; i < matrix1.length; i++) {
@@ -24,9 +24,9 @@ public class Matrix {
         }
     }
 
-    // difference of matrixes
+    // difference of matrices
     public static int[][] difference(int[][] matrix1, int[][] matrix2) {
-        // assures matrixes "match up"
+        // assures matrices "match up"
         if (matrix1.length == matrix2.length && matrix1[0].length == matrix2[0].length) {
             int[][] difference = new int[matrix1.length][matrix1[0].length];
             for (int i = 0; i < matrix1.length; i++) {
@@ -44,7 +44,7 @@ public class Matrix {
         }
     }
 
-    // multiply matrixes
+    // multiply matrices
     public static int[][] multiply(int[][] matrix1, int[][] matrix2) {
         // m x n and n x k matrix
         if (matrix1.length == matrix2[0].length) {
@@ -75,13 +75,13 @@ public class Matrix {
         }
     }
 
-    // currently only works with matrixes of size n = 2^k
-    // strassen's algorithm for multiply
+    // currently only works with matrices of size n = 2^k
+    // /Strassen's algorithm for multiply
     public static int[][] strassen(int[][] matrixA, int[][] matrixB) {
-        // confirm we have matrixes of the same size
+        // confirm we have matrices of the same size
         if (matrixA.length == matrixB.length && matrixA[0].length == matrixA.length && matrixB.length == matrixB[0].length) {
             // base case
-            if (matrixA.length == 1 && matrixA[0].length == 1) {
+            if (matrixA.length == 1) {
                 int[][] product = new int[1][1];
                 product[0][0] = matrixA[0][0] * matrixB[0][0];
                 return product;
@@ -90,7 +90,7 @@ public class Matrix {
             else {
                 int[][] product = new int[matrixA.length][matrixA.length];
 
-                // four submatrixes to be multiplied
+                // four sub-matrices to be multiplied
                 int[][] matrixA11 = new int[matrixA.length / 2][matrixA.length / 2];
                 int[][] matrixA12 = new int[matrixA.length / 2][matrixA.length / 2];
                 int[][] matrixA21 = new int[matrixA.length / 2][matrixA.length / 2];
@@ -101,7 +101,7 @@ public class Matrix {
                 int[][] matrixB21 = new int[matrixA.length / 2][matrixA.length / 2];
                 int[][] matrixB22 = new int[matrixA.length / 2][matrixA.length / 2];
 
-                // initialize the submatrixes
+                // initialize the sub-matrices
                 for (int i = 0; i < matrixA.length/2; i++) {
                     for (int j = 0; j < matrixA.length/2; j ++) {
                         matrixA11[i][j] = matrixA[i][j];
@@ -152,10 +152,10 @@ public class Matrix {
         }
     }
 
-    // print matrixes
+    // print matrices
     public static void printMatrix (int[][] matrix) {
         String row = "";
-
+        // print row by row
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 row =  row + " " + matrix[i][j];
