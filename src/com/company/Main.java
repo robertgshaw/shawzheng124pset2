@@ -49,10 +49,28 @@ public class Main {
         matrix2[3][2] = 31;
         matrix2[3][3] = 32;
 
+        long startTime;
+        long endTime;
+
+        startTime = System.currentTimeMillis();
         int[][] product = Matrix.multiply(matrix1, matrix2);
-        int[][] strassen = Matrix.strassen(matrix1, matrix2);
         Matrix.printMatrix(product);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
         System.out.println("");
+
+        startTime = System.currentTimeMillis();
+        int[][] strassen = Matrix.strassen(matrix1, matrix2);
         Matrix.printMatrix(strassen);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+
+        startTime = System.currentTimeMillis();
+        int[][] strassenFAST = Matrix.strassen2(matrix1, matrix2, 0, 0, 0, 0, matrix1.length);
+        Matrix.printMatrix(strassenFAST);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
     }
 }
