@@ -32,23 +32,14 @@ public class Matrix {
     // combine matrices without copying info
     // matrix 1 and 2 are of size n we are adding submatrices of 1,2
     // assumes matrices are square
-    public static int[][] combine(int[][] matrix1, int[][] matrix2, int row1, int col1, int row2, int col2, int size, Operation operation) {
+    public static int[][] sum2(int[][] matrix1, int[][] matrix2, int row1, int col1, int row2, int col2, int size) {
         if (matrix1.length == matrix2.length && matrix1[0].length == matrix2[0].length) {
             // calculates sum, using new indexing from "location"
             int[][] combo = new int[size][size];
             // iterates through elements of the matrices and adds them together
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    switch (operation) {
-                        // if addition, add them
-                        case ADD:
-                            combo[i][j] = matrix1[row1 + i][col1 + j] + matrix2[row2 + i][col2 + j];
-                            break;
-                        // if subtraction, subtract matrix
-                        default:
-                            combo[i][j] = matrix1[row1 + i][col1 + j] - matrix2[row2 + i][col2 + j];
-                    }
-
+                    combo[i][j] = matrix1[row1 + i][col1 + j] + matrix2[row2 + i][col2 + j];
                 }
             }
             // return result
@@ -75,6 +66,29 @@ public class Matrix {
         }
         // garbage value
         else {
+            int[][] garbage = new int[1][1];
+            garbage[0][0] = Integer.MIN_VALUE;
+            return garbage;
+        }
+    }
+
+    // difference of matrices without copying info
+    // matrix 1 and 2 are of size n we are adding submatrices of 1,2
+    // assumes matrices are square
+    public static int[][] difference2(int[][] matrix1, int[][] matrix2, int row1, int col1, int row2, int col2, int size) {
+        if (matrix1.length == matrix2.length && matrix1[0].length == matrix2[0].length) {
+            // calculates sum, using new indexing from "location"
+            int[][] combo = new int[size][size];
+            // iterates through elements of the matrices and adds them together
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    combo[i][j] = matrix1[row1 + i][col1 + j] - matrix2[row2 + i][col2 + j];
+                }
+            }
+            // return result
+            return combo;
+
+        } else {
             int[][] garbage = new int[1][1];
             garbage[0][0] = Integer.MIN_VALUE;
             return garbage;
@@ -114,7 +128,7 @@ public class Matrix {
 
     // updated strassen
     // currently works for n = 2^k
-    // does not copy data necissarily
+    // does not copy data necessarily
     // improved from strassen regular
     public static int[][] strassen2(int[][] matrixA, int[][] matrixB,
                                     int rowA, int colA,
@@ -137,32 +151,32 @@ public class Matrix {
             // combines though generate a new matrix. in order to be created, we must look at data of matrix A and B, so
             // creating a new matrix is necessary
             int[][] matrixM1 = Matrix.strassen2(
-                    Matrix.combine(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize, Operation.ADD),
-                    Matrix.combine(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize, Operation.ADD),
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize),
                     0, 0, 0, 0, subSize);
             int[][] matrixM2 = Matrix.strassen2(
-                    Matrix.combine(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize, Operation.ADD),
+                    Matrix.sum2(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize),
                     matrixB,
                     0, 0, rowB, colB, subSize);
             int[][] matrixM3 = Matrix.strassen2(
                     matrixA,
-                    Matrix.combine(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize, Operation.SUBTRACT),
+                    Matrix.difference2(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize),
                     rowA, colA, 0, 0, subSize);
             int[][] matrixM4 = Matrix.strassen2(
                     matrixA,
-                    Matrix.combine(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize, Operation.SUBTRACT),
+                    Matrix.difference2(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize),
                     rowA + subSize, colA + subSize, 0, 0, subSize);
             int[][] matrixM5 = Matrix.strassen2(
-                    Matrix.combine(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize, Operation.ADD),
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize),
                     matrixB,
                     0, 0, rowB + subSize, colB + subSize, subSize);
             int[][] matrixM6 = Matrix.strassen2(
-                    Matrix.combine(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize, Operation.SUBTRACT),
-                    Matrix.combine(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize, Operation.ADD),
+                    Matrix.difference2(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize),
                     0, 0, 0, 0, subSize);
             int[][] matrixM7 = Matrix.strassen2(
-                    Matrix.combine(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize, Operation.SUBTRACT),
-                    Matrix.combine(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize, Operation.ADD),
+                    Matrix.difference2(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize),
                     0, 0, 0, 0, subSize);
 
             // recombination
