@@ -5,10 +5,6 @@ package com.company;
  */
 public class Matrix {
 
-    public enum Operation {
-        ADD, SUBTRACT
-    }
-
     // sum of matrices
     public static int[][] sum(int[][] matrix1, int[][] matrix2) {
         // assures matrices "match up"
@@ -124,6 +120,170 @@ public class Matrix {
             garbage[0][0] = Integer.MIN_VALUE;
             return garbage;
         }
+    }
+
+    // multiply matrices
+    public static int[][] multiply2(int[][] matrix1, int[][] matrix2, int row1, int col1, int row2, int col2, int size) {
+        // initializes the product matrix to be returned
+        int[][] product = new int[size][size];
+
+        // iterates rows of matrix 1
+        for (int i = 0; i < size; i++) {
+            int dotProduct = 0;
+            // rows of matrix 2
+            for (int j = 0; j < size; j++) {
+                // iterates columns of matrix 2
+                for (int k = 0; k < size; k++) {
+                    dotProduct = dotProduct + matrix1[row1 + i][col1 + k] * matrix2[row2 + k][col2 + j];
+                }
+
+                product[i][j] = dotProduct;
+                dotProduct = 0;
+            }
+        }
+
+        return product;
+
+    }
+
+
+    // strassen that changes to regular matrix multiply after 1 iteration
+    public static int[][] strassen4(int[][] matrixA, int[][] matrixB,
+                                    int rowA, int colA,
+                                    int rowB, int colB,
+                                    int size) {
+        // base case
+        // when we get down to 1, cannot recurse any deeper
+        if (size == 1) {
+            int[][] product = new int[1][1];
+            product[0][0] = matrixA[rowA][colA] * matrixB[rowB][colB];
+            return product;
+        }
+        // recursive case, create smaller matrices and find their values recursively
+        else {
+            // finds start index of the subMatrixArray that is passed around in order to minimize the amount
+            // of initialization that occurs
+            int subSize = size / 2;
+            int[][] product = new int[size][size];
+
+            // 7 multiplications, does not copy any data
+            // keeps track of "start" and "size" of the matrices in order to avoid recopying data multiple times
+            // combines though generate a new matrix. in order to be created, we must look at data of matrix A and B, so
+            // creating a new matrix is necessary
+            int[][] matrixM1 = Matrix.multiply2(
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize);
+            int[][] matrixM2 = Matrix.multiply2(
+                    Matrix.sum2(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB, colB, subSize);
+            int[][] matrixM3 = Matrix.multiply2(
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize),
+                    rowA, colA, 0, 0, subSize);
+            int[][] matrixM4 = Matrix.strassen2(
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize),
+                    rowA + subSize, colA + subSize, 0, 0, subSize);
+            int[][] matrixM5 = Matrix.multiply2(
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB + subSize, colB + subSize, subSize);
+            int[][] matrixM6 = Matrix.multiply2(
+                    Matrix.difference2(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize);
+            int[][] matrixM7 = Matrix.multiply2(
+                    Matrix.difference2(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize);
+
+            // recombination
+            for (int i = 0; i < subSize; i++) {
+                for (int j = 0; j < subSize; j++) {
+                    product[i][j] = matrixM1[i][j] + matrixM4[i][j] - matrixM5[i][j] + matrixM7[i][j];
+                    product[i][j + subSize] = matrixM3[i][j] + matrixM5[i][j];
+                    product[i + subSize][j] = matrixM2[i][j] + matrixM4[i][j];
+                    product[i + subSize][j + subSize] = matrixM1[i][j] - matrixM2[i][j] + matrixM3[i][j] + matrixM6[i][j];
+                }
+            }
+
+            // return the new matrix, updated values
+            return product;
+        }
+
+    }
+
+    // current optimal strassen: avoids copying the data by passing the "start" and "end" ptrs, avoids allocating arrays
+    // by passing around log(n) * 7 arrays which are reused multiple times to store M1....M7
+    public static int[][] strassen3(int[][] matrixA, int[][] matrixB,
+                                    int rowA, int colA,
+                                    int rowB, int colB,
+                                    int size, int[][][] subMatrixArray,
+                                    int nOriginal) {
+        // base case
+        // when we get down to 1, cannot recurse any deeper
+        if (size == 1) {
+            int[][] product = new int[1][1];
+            product[0][0] = matrixA[rowA][colA] * matrixB[rowB][colB];
+            return product;
+        }
+        // recursive case, create smaller matrices and find their values recursively
+        else {
+            int subSize = size / 2;
+            int[][] product = new int[size][size];
+            int subMatrixArrayStartIndex = Matrix.log(nOriginal/size, 2) * 7;
+
+            // 7 multiplications, does not copy any data
+            // keeps track of "start" and "size" of the matrices in order to avoid recopying data multiple times
+            // combines though generate a new matrix. in order to be created, we must look at data of matrix A and B, so
+            // creating a new matrix is necessary
+            subMatrixArray[subMatrixArrayStartIndex] = Matrix.strassen3(
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 1] = Matrix.strassen3(
+                    Matrix.sum2(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB, colB, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 2] = Matrix.strassen3(
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize),
+                    rowA, colA, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 3] = Matrix.strassen3(
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize),
+                    rowA + subSize, colA + subSize, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 4] = Matrix.strassen3(
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB + subSize, colB + subSize, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 5] = Matrix.strassen3(
+                    Matrix.difference2(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 6] = Matrix.strassen3(
+                    Matrix.difference2(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+
+            // recombination
+            for (int i = 0; i < subSize; i++) {
+                for (int j = 0; j < subSize; j++) {
+                    product[i][j] = subMatrixArray[subMatrixArrayStartIndex][i][j] + subMatrixArray[subMatrixArrayStartIndex + 3][i][j] -
+                                                    subMatrixArray[subMatrixArrayStartIndex + 4][i][j] + subMatrixArray[subMatrixArrayStartIndex + 6][i][j];
+                    product[i][j + subSize] = subMatrixArray[subMatrixArrayStartIndex + 2][i][j] + subMatrixArray[subMatrixArrayStartIndex + 4][i][j];
+                    product[i + subSize][j] = subMatrixArray[subMatrixArrayStartIndex + 1][i][j] + subMatrixArray[subMatrixArrayStartIndex + 3][i][j];
+                    product[i + subSize][j + subSize] = subMatrixArray[subMatrixArrayStartIndex][i][j] - subMatrixArray[subMatrixArrayStartIndex + 1][i][j] +
+                                                        subMatrixArray[subMatrixArrayStartIndex + 2][i][j] + subMatrixArray[subMatrixArrayStartIndex + 5][i][j];
+                }
+            }
+
+            // return the new matrix, updated values
+            return product;
+        }
+
     }
 
     // updated strassen
@@ -283,5 +443,10 @@ public class Matrix {
             System.out.println(row);
             row = "";
         }
+    }
+
+    public static int log(int x, int base)
+    {
+        return (int) (Math.log(x) / Math.log(base));
     }
 }
