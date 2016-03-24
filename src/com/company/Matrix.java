@@ -5,6 +5,25 @@ package com.company;
  */
 public class Matrix {
 
+    public static void compareStrassen4MatrixMultiply(int[][] matrix1, int[][] matrix2, int[][] matrix1A, int[][] matrix2A, int rowA, int colA,
+                                                      int rowB, int colB,
+                                                      int size, int iterations) {
+        long startTime;
+        long endTime;
+
+        startTime = System.currentTimeMillis();
+        Matrix.multiply(matrix1, matrix2);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+
+        startTime = System.currentTimeMillis();
+        Matrix.strassen4(matrix1A, matrix2A, rowA, colA, rowB, colB, size);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+    }
+
     // sum of matrices
     public static int[][] sum(int[][] matrix1, int[][] matrix2) {
         // assures matrices "match up"
@@ -166,34 +185,42 @@ public class Matrix {
             int subSize = size / 2;
             int[][] product = new int[size][size];
 
+
             // 7 multiplications, does not copy any data
             // keeps track of "start" and "size" of the matrices in order to avoid recopying data multiple times
             // combines though generate a new matrix. in order to be created, we must look at data of matrix A and B, so
             // creating a new matrix is necessary
+
             int[][] matrixM1 = Matrix.multiply2(
                     Matrix.sum2(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize),
                     Matrix.sum2(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize),
                     0, 0, 0, 0, subSize);
+
             int[][] matrixM2 = Matrix.multiply2(
                     Matrix.sum2(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize),
                     matrixB,
                     0, 0, rowB, colB, subSize);
+
             int[][] matrixM3 = Matrix.multiply2(
                     matrixA,
                     Matrix.difference2(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize),
                     rowA, colA, 0, 0, subSize);
-            int[][] matrixM4 = Matrix.strassen2(
+
+            int[][] matrixM4 = Matrix.multiply2(
                     matrixA,
                     Matrix.difference2(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize),
                     rowA + subSize, colA + subSize, 0, 0, subSize);
+
             int[][] matrixM5 = Matrix.multiply2(
                     Matrix.sum2(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize),
                     matrixB,
                     0, 0, rowB + subSize, colB + subSize, subSize);
+
             int[][] matrixM6 = Matrix.multiply2(
                     Matrix.difference2(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize),
                     Matrix.sum2(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize),
                     0, 0, 0, 0, subSize);
+
             int[][] matrixM7 = Matrix.multiply2(
                     Matrix.difference2(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize),
                     Matrix.sum2(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize),
