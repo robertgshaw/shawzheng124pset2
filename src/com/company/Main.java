@@ -52,6 +52,6 @@ public class Main {
             matrixA2 = matrix2;
         }
 
-        Matrix.compareStrassen4MatrixMultiply(matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
+        Matrix.compareStrassen5MatrixMultiply(16, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
     }
 }

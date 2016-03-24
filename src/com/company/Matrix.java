@@ -5,6 +5,25 @@ package com.company;
  */
 public class Matrix {
 
+    public static void compareStrassen5MatrixMultiply(int cutoff, int[][] matrix1, int[][] matrix2, int[][] matrix1A, int[][] matrix2A, int rowA, int colA,
+                                                      int rowB, int colB,
+                                                      int size, int iterations) {
+        long startTime;
+        long endTime;
+
+        startTime = System.currentTimeMillis();
+        Matrix.multiply(matrix1, matrix2);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+
+        startTime = System.currentTimeMillis();
+        Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log(size/cutoff, 2) * 7][size][size], size);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+    }
+
     public static void compareStrassen4MatrixMultiply(int[][] matrix1, int[][] matrix2, int[][] matrix1A, int[][] matrix2A, int rowA, int colA,
                                                       int rowB, int colB,
                                                       int size, int iterations) {
@@ -165,6 +184,81 @@ public class Matrix {
 
     }
 
+    // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
+    // smaller than a given cutoff point: the "final" Strassen's algorithm for the assignment
+    public static int[][] strassen5(int cutoff, int[][] matrixA, int[][] matrixB,
+                                    int rowA, int colA,
+                                    int rowB, int colB,
+                                    int size, int[][][] subMatrixArray,
+                                    int nOriginal) {
+
+        int[][] product = new int[size][size];
+
+        // base case
+        // when we get down to size below cutoff, we switch to Standard Matrix Multiplication Algorithm
+        if (size <= cutoff) {
+            product = Matrix.multiply2(
+                    matrixA, matrixB,
+                    0, 0, 0, 0, size);
+
+            // return the new matrix, updated values
+            return product;
+        }
+        // recursive case, create smaller matrices and find their values recursively
+        else {
+            int subSize = size / 2;
+            int subMatrixArrayStartIndex = Matrix.log(nOriginal/size, 2) * 7;
+
+            // 7 multiplications, does not copy any data
+            // keeps track of "start" and "size" of the matrices in order to avoid recopying data multiple times
+            // combines though generate a new matrix. in order to be created, we must look at data of matrix A and B, so
+            // creating a new matrix is necessary
+            subMatrixArray[subMatrixArrayStartIndex] = Matrix.strassen5( cutoff,
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 1] = Matrix.strassen5( cutoff,
+                    Matrix.sum2(matrixA, matrixA, (rowA + subSize), colA, (rowA + subSize), (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB, colB, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 2] = Matrix.strassen5( cutoff,
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, rowB, (colB + subSize), (rowB + subSize), (colB + subSize), subSize),
+                    rowA, colA, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 3] = Matrix.strassen5( cutoff,
+                    matrixA,
+                    Matrix.difference2(matrixB, matrixB, (rowB + subSize), colB, rowB, colB, subSize),
+                    rowA + subSize, colA + subSize, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 4] = Matrix.strassen5( cutoff,
+                    Matrix.sum2(matrixA, matrixA, rowA, colA, rowA, (colA + subSize), subSize),
+                    matrixB,
+                    0, 0, rowB + subSize, colB + subSize, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 5] = Matrix.strassen5( cutoff,
+                    Matrix.difference2(matrixA, matrixA, (rowA + subSize), colA, rowA, colA, subSize),
+                    Matrix.sum2(matrixB, matrixB, rowB, colB, rowB, (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+            subMatrixArray[subMatrixArrayStartIndex + 6] = Matrix.strassen5( cutoff,
+                    Matrix.difference2(matrixA, matrixA, rowA, (colA + subSize), (rowA + subSize), (colA + subSize), subSize),
+                    Matrix.sum2(matrixB, matrixB, (rowB + subSize), colB, (rowB + subSize), (colB + subSize), subSize),
+                    0, 0, 0, 0, subSize, subMatrixArray, nOriginal);
+
+            // recombination
+            for (int i = 0; i < subSize; i++) {
+                for (int j = 0; j < subSize; j++) {
+                    product[i][j] = subMatrixArray[subMatrixArrayStartIndex][i][j] + subMatrixArray[subMatrixArrayStartIndex + 3][i][j] -
+                            subMatrixArray[subMatrixArrayStartIndex + 4][i][j] + subMatrixArray[subMatrixArrayStartIndex + 6][i][j];
+                    product[i][j + subSize] = subMatrixArray[subMatrixArrayStartIndex + 2][i][j] + subMatrixArray[subMatrixArrayStartIndex + 4][i][j];
+                    product[i + subSize][j] = subMatrixArray[subMatrixArrayStartIndex + 1][i][j] + subMatrixArray[subMatrixArrayStartIndex + 3][i][j];
+                    product[i + subSize][j + subSize] = subMatrixArray[subMatrixArrayStartIndex][i][j] - subMatrixArray[subMatrixArrayStartIndex + 1][i][j] +
+                            subMatrixArray[subMatrixArrayStartIndex + 2][i][j] + subMatrixArray[subMatrixArrayStartIndex + 5][i][j];
+                }
+            }
+
+            // return the new matrix, updated values
+            return product;
+        }
+
+    }
 
     // strassen that changes to regular matrix multiply after 1 iteration
     public static int[][] strassen4(int[][] matrixA, int[][] matrixB,
