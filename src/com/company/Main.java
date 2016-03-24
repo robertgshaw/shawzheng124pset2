@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        int n = 64;
+        int n = 32;
 
         int[][] matrix1 = new int[n][n];
         int[][] matrix2 = new int[n][n];
@@ -52,6 +52,6 @@ public class Main {
             matrixA2 = matrix2;
         }
 
-        Matrix.compareStrassen5MatrixMultiply(16, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
+        Matrix.compareStrassen5MatrixMultiply(8, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
     }
 }

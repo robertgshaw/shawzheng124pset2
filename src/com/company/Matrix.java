@@ -12,14 +12,23 @@ public class Matrix {
         long endTime;
 
         startTime = System.currentTimeMillis();
-        Matrix.multiply(matrix1, matrix2);
+        int[][] matrix3 = Matrix.multiply(matrix1, matrix2);
         endTime = System.currentTimeMillis();
+        Matrix.printMatrix(matrix3);
         System.out.println((endTime - startTime) + " milliseconds");
         System.out.println("");
 
         startTime = System.currentTimeMillis();
-        Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log(size/cutoff, 2) * 7][size][size], size);
+        int[][] matrix4 = Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
         endTime = System.currentTimeMillis();
+        Matrix.printMatrix(matrix4);
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
+
+        startTime = System.currentTimeMillis();
+        int[][] matrix5 = Matrix.strassen3(matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size), 2) * 7][size/2][size/2], size);
+        endTime = System.currentTimeMillis();
+        Matrix.printMatrix(matrix5);
         System.out.println((endTime - startTime) + " milliseconds");
         System.out.println("");
     }
@@ -199,7 +208,7 @@ public class Matrix {
         if (size <= cutoff) {
             product = Matrix.multiply2(
                     matrixA, matrixB,
-                    0, 0, 0, 0, size);
+                    rowA, colA, rowB, colB, size);
 
             // return the new matrix, updated values
             return product;
