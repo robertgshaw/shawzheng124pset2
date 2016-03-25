@@ -194,7 +194,7 @@ public class Matrix {
     }
 
     // Applies static padding to odd matrices
-    public static int valuetopad(int cutoff, int size) {
+    public static int valueToPad(int cutoff, int size) {
         int iterations = 0;
         int updatedSize = size;
         while(updatedSize > cutoff) {
@@ -212,23 +212,24 @@ public class Matrix {
         }
     }
 
-    // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
-    // smaller than a given cutoff point and applies static padding to odd matrices: the "final" Strassen's algorithm
-    // for the assignment
-//    public static int[][] runStrassen(int cutoff, int[][] matrixA, int[][] matrixB,
-//                                    int rowA, int colA,
-//                                    int rowB, int colB,
-//                                    int size, int[][][] subMatrixArray,
-//                                    int nOriginal) {
-//        if (size % 2 == 1) {
-//            int[][] matrix1A = Matrix.pad(matrixA, size);
-//            int[][] matrix1B = Matrix.pad(matrixB, size);
-//            return Matrix.strassen5(cutoff, matrix1A, matrix1B, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
-//        }
-//        else {
-//            return Matrix.strassen5(cutoff, matrixA, matrixB, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size / cutoff), 2) * 7][size][size], size);
-//        }
-//    }
+//     Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
+//     smaller than a given cutoff point and applies static padding to odd matrices: the "final" Strassen's algorithm
+//     for the assignment
+/*    public static int[][] runStrassen(int cutoff, int[][] matrixA, int[][] matrixB,
+                                    int rowA, int colA,
+                                    int rowB, int colB,
+                                    int size) {
+        int padSize = Matrix.valueToPad(cutoff, size);
+
+        if (size % 2 == 1) {
+            int[][] matrix1A = Matrix.pad(matrixA, size);
+            int[][] matrix1B = Matrix.pad(matrixB, size);
+            return Matrix.strassen5(cutoff, matrix1A, matrix1B, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
+        }
+        else {
+            return Matrix.strassen5(cutoff, matrixA, matrixB, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size / cutoff), 2) * 7][size][size], size);
+        }
+    } */
 
     // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
     // smaller than a given cutoff point
