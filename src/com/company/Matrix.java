@@ -1,4 +1,3 @@
-package com.company;
 
 /**
  * Created by robertshaw on 3/12/16.
@@ -176,16 +175,13 @@ public class Matrix {
 
         // iterates rows of matrix 1
         for (int i = 0; i < size; i++) {
-            int dotProduct = 0;
             // rows of matrix 2
             for (int j = 0; j < size; j++) {
                 // iterates columns of matrix 2
                 for (int k = 0; k < size; k++) {
-                    dotProduct = dotProduct + matrix1[row1 + i][col1 + k] * matrix2[row2 + k][col2 + j];
+                    product[i][k] = product[i][k] + matrix1[row1 + i][col1 + j] * matrix2[row2 + j][col2 + k];
                 }
 
-                product[i][j] = dotProduct;
-                dotProduct = 0;
             }
         }
 
@@ -254,9 +250,10 @@ public class Matrix {
        totalTime = totalTime + endTime - startTime;
 
        startTime = System.currentTimeMillis();
-       int[][] finalMatrix = Matrix.strassen5(cutoff, matrix1, matrix2, 0, 0, 0, 0, padSize, new int[Matrix.log((int) Math.ceil((double) padSize / cutoff), 2) * 7][][], padSize);
+       int[][] finalMatrix = Matrix.strassen5(cutoff, matrix1, matrix2, 0, 0, 0, 0, padSize, new int[Matrix.log((int) Math.ceil((double) padSize / cutoff), 2) * 7 + 7][][], padSize);
 
        endTime = System.currentTimeMillis();
+       //Matrix.printMatrix(finalMatrix);
        totalTime = totalTime + endTime - startTime;
        System.out.println(totalTime + " milliseconds");
 

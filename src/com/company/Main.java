@@ -1,10 +1,8 @@
-package com.company;
-
 public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        int n = 511;
+        int n = 145;
 
         int[][] matrix1 = new int[n][n];
         int[][] matrix2 = new int[n][n];
@@ -31,18 +29,22 @@ public class Main {
         long endTime;
 
 
-        startTime = System.currentTimeMillis();
-        int[][] matrix3 = Matrix.multiply2(matrix1, matrix2, 0, 0, 0, 0, n);
-        endTime = System.currentTimeMillis();
-        System.out.println((endTime - startTime) + " milliseconds");
-        System.out.println("");
 
-        startTime = System.currentTimeMillis();
-        int[][] strassen = Matrix.strassen5(n/2, matrix1, matrix2, 0,0,0,0, n, new int[7][][],n);
-        endTime = System.currentTimeMillis();
-        System.out.println((endTime - startTime) + " milliseconds");
-        System.out.println("");
+//        startTime = System.currentTimeMillis();
+//        int[][] matrix3 = Matrix.multiply2(matrix1, matrix2, 0, 0, 0, 0, n);
+//        endTime = System.currentTimeMillis();
+//        System.out.println((endTime - startTime) + " milliseconds");
+//        System.out.println("");
 
-        Matrix.runStrassen(72, matrix1, matrix2, n);
+        Matrix.runStrassen(64, matrix1, matrix2, n);
+
+//        startTime = System.currentTimeMillis();
+//        int[][] strassen = Matrix.strassen5(n/2, matrix1, matrix2, 0,0,0,0, n, new int[7][][],n);
+//        endTime = System.currentTimeMillis();
+//        Matrix.printMatrix(strassen);
+//        System.out.println((endTime - startTime) + " milliseconds");
+//        System.out.println("");
+
+
     }
 }
