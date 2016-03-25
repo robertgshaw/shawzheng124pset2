@@ -11,26 +11,26 @@ public class Matrix {
         long startTime;
         long endTime;
 
-        startTime = System.currentTimeMillis();
-        int[][] matrix3 = Matrix.multiply(matrix1, matrix2);
-        endTime = System.currentTimeMillis();
-        Matrix.printMatrix(matrix3);
-        System.out.println((endTime - startTime) + " milliseconds");
-        System.out.println("");
-
-        startTime = System.currentTimeMillis();
+        startTime = System.nanoTime();
         int[][] matrix4 = Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
-        endTime = System.currentTimeMillis();
-        Matrix.printMatrix(matrix4);
-        System.out.println((endTime - startTime) + " milliseconds");
+        endTime = System.nanoTime();
+        System.out.println((endTime - startTime) / 1000 + " microseconds");
         System.out.println("");
 
-        startTime = System.currentTimeMillis();
-        int[][] matrix5 = Matrix.strassen3(matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size), 2) * 7][size/2][size/2], size);
-        endTime = System.currentTimeMillis();
-        Matrix.printMatrix(matrix5);
-        System.out.println((endTime - startTime) + " milliseconds");
+        startTime = System.nanoTime();
+        int[][] matrix3 = Matrix.multiply2(matrix1, matrix2, 0, 0, 0, 0, size);
+        printMatrix(matrix3);
+        endTime = System.nanoTime();
+        System.out.println((endTime - startTime) / 1000 + " microseconds");
         System.out.println("");
+
+
+
+        //startTime = System.nanoTime();
+        //int[][] matrix5 = Matrix.strassen3(matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size), 2) * 7][size/2][size/2], size);
+        //endTime = System.nanoTime();
+        //System.out.println((endTime - startTime) + " milliseconds");
+        //System.out.println("");
     }
 
     public static void compareStrassen4MatrixMultiply(int[][] matrix1, int[][] matrix2, int[][] matrix1A, int[][] matrix2A, int rowA, int colA,
@@ -193,28 +193,61 @@ public class Matrix {
 
     }
 
+    // Applies static padding to odd matrices
+    public static int valuetopad(int cutoff, int size) {
+        int iterations = 0;
+        int updatedSize = size;
+        while(updatedSize > cutoff) {
+            iterations++;
+            updatedSize = updatedSize / 2;
+        }
+
+        int twoToCutoff = (int) Math.pow(2.0, (double) iterations);
+        // If we cannot get to the cutoff by dividing by 2 without reaching an odd number, we will need to pad
+        // Otherwise we stick with our current size
+        if ((size % twoToCutoff != 0)) {
+            return size + twoToCutoff - (size % twoToCutoff);
+        } else {
+            return size;
+        }
+    }
+
     // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
-    // smaller than a given cutoff point: the "final" Strassen's algorithm for the assignment
+    // smaller than a given cutoff point and applies static padding to odd matrices: the "final" Strassen's algorithm
+    // for the assignment
+//    public static int[][] runStrassen(int cutoff, int[][] matrixA, int[][] matrixB,
+//                                    int rowA, int colA,
+//                                    int rowB, int colB,
+//                                    int size, int[][][] subMatrixArray,
+//                                    int nOriginal) {
+//        if (size % 2 == 1) {
+//            int[][] matrix1A = Matrix.pad(matrixA, size);
+//            int[][] matrix1B = Matrix.pad(matrixB, size);
+//            return Matrix.strassen5(cutoff, matrix1A, matrix1B, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
+//        }
+//        else {
+//            return Matrix.strassen5(cutoff, matrixA, matrixB, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size / cutoff), 2) * 7][size][size], size);
+//        }
+//    }
+
+    // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
+    // smaller than a given cutoff point
     public static int[][] strassen5(int cutoff, int[][] matrixA, int[][] matrixB,
                                     int rowA, int colA,
                                     int rowB, int colB,
                                     int size, int[][][] subMatrixArray,
                                     int nOriginal) {
 
-        int[][] product = new int[size][size];
-
         // base case
         // when we get down to size below cutoff, we switch to Standard Matrix Multiplication Algorithm
         if (size <= cutoff) {
-            product = Matrix.multiply2(
+            return Matrix.multiply2(
                     matrixA, matrixB,
                     rowA, colA, rowB, colB, size);
-
-            // return the new matrix, updated values
-            return product;
         }
         // recursive case, create smaller matrices and find their values recursively
         else {
+            int[][] product = new int[size][size];
             int subSize = size / 2;
             int subMatrixArrayStartIndex = Matrix.log(nOriginal/size, 2) * 7;
 

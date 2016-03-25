@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        int n = 32;
+        int n = 333;
 
         int[][] matrix1 = new int[n][n];
         int[][] matrix2 = new int[n][n];
@@ -40,18 +40,19 @@ public class Main {
                     matrixA1[n][j] = 0;
                     matrixA2[n][j] = 0;
 
-                    matrixA1[i][n] = 0;
-                    matrixA2[i][n] = 0;
-                }
-            }
+            matrixA1[i][n] = 0;
+            matrixA2[i][n] = 0;
+        }
+    }
 
-            matrixA1[n][n] = 0;
-            matrixA2[n][n] = 0;
+    matrixA1[n][n] = 0;
+    matrixA2[n][n] = 0;
         } else {
             matrixA1 = matrix1;
             matrixA2 = matrix2;
         }
 
-        Matrix.compareStrassen5MatrixMultiply(8, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
+    //Matrix.compareStrassen5MatrixMultiply(n/2, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
+
     }
 }
