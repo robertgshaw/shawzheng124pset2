@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        int n = 333;
+        int n = 511;
 
         int[][] matrix1 = new int[n][n];
         int[][] matrix2 = new int[n][n];
@@ -27,32 +27,22 @@ public class Main {
             }
         }
 
-        // adds buffers for even/ odd case
-        if (n % 2 == 1) {
-            matrixA1 = new int[n + 1][n + 1];
-            matrixA2 = new int[n + 1][n + 1];
+        long startTime;
+        long endTime;
 
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    matrixA1[i][j] = matrix1[i][j];
-                    matrixA2[i][j] = matrix2[i][j];
 
-                    matrixA1[n][j] = 0;
-                    matrixA2[n][j] = 0;
+        startTime = System.currentTimeMillis();
+        int[][] matrix3 = Matrix.multiply2(matrix1, matrix2, 0, 0, 0, 0, n);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
 
-            matrixA1[i][n] = 0;
-            matrixA2[i][n] = 0;
-        }
-    }
+        startTime = System.currentTimeMillis();
+        int[][] strassen = Matrix.strassen5(n/2, matrix1, matrix2, 0,0,0,0, n, new int[7][][],n);
+        endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) + " milliseconds");
+        System.out.println("");
 
-    matrixA1[n][n] = 0;
-    matrixA2[n][n] = 0;
-        } else {
-            matrixA1 = matrix1;
-            matrixA2 = matrix2;
-        }
-
-    //Matrix.compareStrassen5MatrixMultiply(n/2, matrix1, matrix2, matrixA1, matrixA2, 0, 0, 0, 0, n, 10);
-
+        Matrix.runStrassen(72, matrix1, matrix2, n);
     }
 }

@@ -12,7 +12,7 @@ public class Matrix {
         long endTime;
 
         startTime = System.nanoTime();
-        int[][] matrix4 = Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
+        int[][] matrix4 = Matrix.strassen5(cutoff, matrix1A, matrix2A, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][][], size);
         endTime = System.nanoTime();
         System.out.println((endTime - startTime) / 1000 + " microseconds");
         System.out.println("");
@@ -215,21 +215,52 @@ public class Matrix {
 //     Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
 //     smaller than a given cutoff point and applies static padding to odd matrices: the "final" Strassen's algorithm
 //     for the assignment
-/*    public static int[][] runStrassen(int cutoff, int[][] matrixA, int[][] matrixB,
-                                    int rowA, int colA,
-                                    int rowB, int colB,
-                                    int size) {
-        int padSize = Matrix.valueToPad(cutoff, size);
+   public static void runStrassen(int cutoff, int[][] matrixA, int[][] matrixB, int size) {
 
-        if (size % 2 == 1) {
-            int[][] matrix1A = Matrix.pad(matrixA, size);
-            int[][] matrix1B = Matrix.pad(matrixB, size);
-            return Matrix.strassen5(cutoff, matrix1A, matrix1B, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size/cutoff), 2) * 7][size][size], size);
-        }
-        else {
-            return Matrix.strassen5(cutoff, matrixA, matrixB, rowA, colA, rowB, colB, size, new int[Matrix.log((int) Math.ceil((double) size / cutoff), 2) * 7][size][size], size);
-        }
-    } */
+       long totalTime = (long) 0.0;
+       long startTime;
+       long endTime;
+
+       startTime = System.currentTimeMillis();
+       int padSize = Matrix.valueToPad(cutoff, size);
+       endTime = System.currentTimeMillis();
+       totalTime = endTime - startTime;
+
+       int[][] matrix1 = new int[padSize][padSize];
+       int[][] matrix2 = new int[padSize][padSize];
+
+       for (int i = 0; i < size; i++) {
+           for (int j = 0; j < size; j++) {
+               matrix1[i][j] = matrixA[i][j];
+               matrix2[i][j] = matrixB[i][j];
+           }
+       }
+
+       startTime = System.currentTimeMillis();
+       for (int i = size; i < padSize; i++) {
+           for (int j = 0; j < padSize; j++) {
+               matrix1[i][j] = 0;
+               matrix2[i][j] = 0;
+           }
+       }
+
+       for (int i = 0; i < size; i++) {
+           for (int j = size; j < padSize; j++) {
+               matrix1[i][j] = 0;
+               matrix2[i][j] = 0;
+           }
+       }
+       endTime = System.currentTimeMillis();
+       totalTime = totalTime + endTime - startTime;
+
+       startTime = System.currentTimeMillis();
+       int[][] finalMatrix = Matrix.strassen5(cutoff, matrix1, matrix2, 0, 0, 0, 0, padSize, new int[Matrix.log((int) Math.ceil((double) padSize / cutoff), 2) * 7][][], padSize);
+
+       endTime = System.currentTimeMillis();
+       totalTime = totalTime + endTime - startTime;
+       System.out.println(totalTime + " milliseconds");
+
+   }
 
     // Recursive Strassen's which changes to the standard matrix multiplication after the submatrix is of a size
     // smaller than a given cutoff point
